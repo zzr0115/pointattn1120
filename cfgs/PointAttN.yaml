@@ -1,6 +1,6 @@
 # 训练
-batch_size: 2
-workers: 1
+batch_size: 16  # RTX 4090 24GB 显存可以用更大的 batch
+workers: 8  # 使用多个 worker 加速数据加载
 start_epoch: 0
 end_epoch: 200
 

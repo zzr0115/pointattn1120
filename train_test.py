@@ -238,9 +238,11 @@ if __name__ == "__main__":
         raise ValueError('dataset is not exist')
     
     dataloader = DataLoader(dataset, batch_size=args.batch_size, 
-                            shuffle=True, num_workers=int(args.workers))
+                            shuffle=True, num_workers=int(args.workers),
+                            pin_memory=True)
     dataloader_test = DataLoader(dataset_test, batch_size=args.batch_size, 
-                                 shuffle=False, num_workers=int(args.workers))
+                                 shuffle=False, num_workers=int(args.workers),
+                                 pin_memory=True)
     
     logger.info(f'Length of train dataset:{len(dataset)}')
     logger.info(f'Length of test dataset:{len(dataset_test)}')
