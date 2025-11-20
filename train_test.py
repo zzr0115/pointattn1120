@@ -48,7 +48,7 @@ def epoch_train(net, dataloader, optimizer, device, epoch, exp_name, writer):
         
         if batch_idx % args.batch_interval_to_print == 0:
             current_lr = optimizer.param_groups[0]['lr']
-            logger.info(f'{exp_name} train [epoch {epoch}: {batch_idx}/{len(dataloader.dataset) / args.batch_size}]')
+            logger.info(f'{exp_name} train [epoch {epoch}/{args.end_epoch-1 } ; batch {batch_idx}/{len(dataloader)-1}]')
             logger.info(f'loss_type: {args.loss}; fine_loss: {loss2.mean().item():.6f}; total_loss: {net_loss.item():.6f}; lr: {current_lr:.6f}')
     
     # 记录epoch平均loss
