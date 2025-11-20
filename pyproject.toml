@@ -1,0 +1,75 @@
+[project]
+name = "pointattn"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10.0"
+
+dependencies = [
+    "numpy>=1.26.0",
+    "tensorboard>=2.20.0",
+    "h5py>=3.6.0",
+    "matplotlib>=3.4.3",
+    "munch>=2.5.0",
+    "PyYAML>=5.4.1",
+    "transforms3d>=0.4.2",
+    "open3d>=0.13.0",
+    "chamfer-3d",
+    "mmdet3d",
+]
+
+
+[[tool.uv.index]] 
+name = "qinghua" 
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+
+[project.optional-dependencies]
+cpu = [
+  "torch>=2.7.0",
+  "torchvision>=0.22.0",
+]
+cu118 = [
+  "torch>=2.7.0",
+  "torchvision>=0.22.0",
+]
+cu128 = [
+  "torch>=2.7.0",
+  "torchvision>=0.22.0",
+]
+
+[tool.uv]
+conflicts = [
+  [
+    { extra = "cpu" },
+    { extra = "cu118" },
+    { extra = "cu128" },
+  ],
+]
+
+[tool.uv.sources]
+chamfer-3d = { path = "dist/chamfer_3d-0.0.0-cp310-cp310-linux_x86_64.whl" }
+mmdet3d = { path = "dist/mmdet3d-0.14.0-cp310-cp310-linux_x86_64.whl" }
+
+torch = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu118", extra = "cu118" },
+  { index = "pytorch-cu128", extra = "cu128" },
+]
+torchvision = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu118", extra = "cu118" },
+  { index = "pytorch-cu128", extra = "cu128" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+[[tool.uv.index]]
+name = "pytorch-cu118"
+url = "https://download.pytorch.org/whl/cu118"
+explicit = true
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true

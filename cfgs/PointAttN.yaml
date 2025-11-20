@@ -1,0 +1,48 @@
+# 训练
+batch_size: 2
+workers: 1
+start_epoch: 0
+end_epoch: 200
+
+work_dir: log/ # 训练日志保存路径
+flag: debug # 调试
+manual_seed: null # 1748
+batch_interval_to_print: 100
+epoch_interval_to_save: 1
+epoch_interval_to_val: 1
+
+# 模型
+model_name: PointAttN
+load_model: # ./log/PointAttN_cd_debug_pcn/model_pcn_new.pth
+device: '0'
+loss: cd #cd
+model_configs:
+  pcn:
+    step1: 4
+    step2: 8
+  c3d:
+    step1: 1
+    step2: 4
+
+# 学习率
+lr: 0.0001
+lr_decay: True
+lr_decay_interval: 40
+lr_decay_rate: 0.7
+lr_step_decay_epochs: null
+lr_step_decay_rates: null
+lr_clip: 1.e-6
+
+# 优化器
+optimizer: Adam
+weight_decay: 0
+betas: 0.9, 0.999
+
+# 数据集
+num_points: 2048
+dataset: 'c3d'
+pcnpath: $PATH/ShapeNetCompletion
+c3dpath: './data/dataset2019/shapenet'
+
+# 测试
+save_vis: False
