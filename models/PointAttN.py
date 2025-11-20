@@ -5,7 +5,7 @@ import torch.nn.parallel
 import torch.utils.data
 import torch.nn.functional as F
 from utils.model_utils import calc_cd
-from utils.mm3d_pn2 import furthest_point_sample, gather_points
+from ops import furthest_point_sample, gather_points
 
 
 class cross_transformer(nn.Module):
