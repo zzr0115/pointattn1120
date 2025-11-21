@@ -11,12 +11,12 @@ import random
 import numpy as np
 import argparse
 from dataset import C3D_h5, PCN_pcd
-from mylogger import get_logger
+from mylogger import get_logger, CSVLogger
 from myboard import get_boardwriter
 from torch.optim.lr_scheduler import StepLR, MultiStepLR
 
 
-def epoch_train(net, dataloader, optimizer, device, epoch, exp_name, writer):
+def epoch_train(net, dataloader, optimizer, device, epoch, exp_name, writer, csv_logger):
     """单个epoch的训练过程"""
     net.train()
     epoch_loss_sum = 0.0
@@ -51,9 +51,10 @@ def epoch_train(net, dataloader, optimizer, device, epoch, exp_name, writer):
             logger.info(f'{exp_name} train [epoch {epoch}/{args.end_epoch-1 } ; batch {batch_idx}/{len(dataloader)-1}]')
             logger.info(f'loss_type: {args.loss}; fine_loss: {loss2.mean().item():.6f}; total_loss: {net_loss.item():.6f}; lr: {current_lr:.6f}')
     
-    # 记录epoch平均loss
+    # 记录epoch平均loss到TensorBoard和CSV
     epoch_avg_loss = epoch_loss_sum / batch_count
     writer.add_scalar('train/epoch_avg_loss', epoch_avg_loss, epoch)
+    csv_logger.add_scalar('train/loss', epoch_avg_loss, epoch)
 
 
 def train(net, dataloader, dataloader_test, optimizer, scheduler, device):
@@ -64,11 +65,17 @@ def train(net, dataloader, dataloader_test, optimizer, scheduler, device):
     metrics = ['cd_p', 'cd_t', 'cd_t_coarse', 'cd_p_coarse']
     best_epoch_losses = {m: (0, np.inf) for m in metrics}
     writer = get_boardwriter(exp_name)
+    
+    # 2. 初始化CSV记录器（从配置文件加载列名）
+    csv_logger = CSVLogger(log_dir / 'training_metrics.csv', 
+                          columns=args.csv_columns, 
+                          add_timestamp=True)
+    logger.info(f'CSV metrics will be saved to: {csv_logger.get_filepath()}')
 
-    # 2. 训练循环
+    # 3. 训练循环
     for epoch in range(args.start_epoch, args.end_epoch):
         # 训练一个epoch
-        epoch_train(net, dataloader, optimizer, device, epoch, exp_name, writer)
+        epoch_train(net, dataloader, optimizer, device, epoch, exp_name, writer, csv_logger)
         
         # 每隔1个epoch保存当前模型
         if epoch % args.epoch_interval_to_save == 0:
@@ -79,7 +86,7 @@ def train(net, dataloader, dataloader_test, optimizer, scheduler, device):
         if epoch % args.epoch_interval_to_val == 0 or epoch == args.end_epoch - 1:
             val(net=net, curr_epoch_num=epoch, metrics=metrics,
                 dataloader_test=dataloader_test, best_epoch_losses=best_epoch_losses, 
-                writer=writer, device=device)
+                writer=writer, csv_logger=csv_logger, device=device)
         
         # 更新学习率
         if scheduler is not None:
@@ -87,12 +94,13 @@ def train(net, dataloader, dataloader_test, optimizer, scheduler, device):
             current_lr = optimizer.param_groups[0]['lr']
             writer.add_scalar('train/learning_rate', current_lr, epoch)
             writer.add_scalar('train/learning_rate_log', np.log10(current_lr), epoch)  # 对数尺度
-    
+            csv_logger.add_scalar('train/lr', current_lr, epoch) # 记录学习率到CSV（按列添加）
+
     writer.close()
     logger.info("Training completed!")
 
 
-def val(net, curr_epoch_num, metrics, dataloader_test, best_epoch_losses, writer, device):
+def val(net, curr_epoch_num, metrics, dataloader_test, best_epoch_losses, writer, csv_logger, device):
     logger.info(f'Epoch {curr_epoch_num} Testing...')
     net.eval()
     
@@ -116,9 +124,10 @@ def val(net, curr_epoch_num, metrics, dataloader_test, best_epoch_losses, writer
         # 计算平均值
         loss_avgs = {m: loss_sums[m] / batch_count for m in metrics}
         
-        # 记录验证指标到TensorBoard
+        # 记录验证指标到TensorBoard和CSV
         for loss_type, avg_loss in loss_avgs.items():
             writer.add_scalar(f'val/{loss_type}', avg_loss, curr_epoch_num)
+            csv_logger.add_scalar(f'val/{loss_type}', avg_loss, curr_epoch_num)
         
         # 更新最佳模型
         best_log = []
@@ -134,7 +143,7 @@ def val(net, curr_epoch_num, metrics, dataloader_test, best_epoch_losses, writer
         curr_log = [f'curr_{type}: {loss_avgs[type]:.6f}' for type in metrics]
 
         logger.info('; '.join(curr_log))
-        logger.info('; '.join(best_log))   
+        logger.info('; '.join(best_log))
 
 
 def result_test():

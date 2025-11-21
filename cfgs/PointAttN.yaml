@@ -46,3 +46,6 @@ c3dpath: './data/dataset2019/shapenet'
 
 # 测试
 save_vis: False
+
+# CSV记录器配置
+csv_columns: ['epoch', 'train/loss', 'val/cd_p', 'val/cd_t', 'val/cd_p_coarse', 'val/cd_t_coarse', 'train/lr']
