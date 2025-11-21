@@ -84,7 +84,9 @@ def train(net, dataloader, dataloader_test, optimizer, scheduler, device):
         # 更新学习率
         if scheduler is not None:
             scheduler.step()
-            writer.add_scalar('train/learning_rate', optimizer.param_groups[0]['lr'], epoch)
+            current_lr = optimizer.param_groups[0]['lr']
+            writer.add_scalar('train/learning_rate', current_lr, epoch)
+            writer.add_scalar('train/learning_rate_log', np.log10(current_lr), epoch)  # 对数尺度
     
     writer.close()
     logger.info("Training completed!")
