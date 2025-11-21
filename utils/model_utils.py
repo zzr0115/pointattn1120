@@ -1,17 +1,7 @@
 import torch
-import math
-import os
-import sys
-import torch.nn as nn
-import torch.nn.functional as F
 
-
-
-proj_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-sys.path.append(os.path.join(proj_dir, "utils/ChamferDistancePytorch"))
-from utils.ChamferDistancePytorch.chamfer3D.chamfer_3D import dist_chamfer_3D
-from utils.ChamferDistancePytorch.fscore import fscore
+from .ChamferDistancePytorch.chamfer3D.chamfer_3D import dist_chamfer_3D
+from .ChamferDistancePytorch.fscore import fscore
 
 
 def calc_cd(output, gt, calc_f1=False):
