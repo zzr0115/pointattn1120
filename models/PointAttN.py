@@ -1,8 +1,5 @@
-from __future__ import print_function
 import torch
 import torch.nn as nn
-import torch.nn.parallel
-import torch.utils.data
 import torch.nn.functional as F
 from utils.model_utils import calc_cd
 from ops import furthest_point_sample, gather_points
@@ -24,7 +21,7 @@ class cross_transformer(nn.Module):
         self.dropout12 = nn.Dropout(dropout)
         self.dropout13 = nn.Dropout(dropout)
 
-        self.activation1 = torch.nn.GELU()
+        self.activation1 = nn.GELU()
 
         self.input_proj = nn.Conv1d(d_model, d_model_out, kernel_size=1)
 
