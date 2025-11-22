@@ -57,10 +57,10 @@ def save_pcd(args):
     for idx in range(len(dataset_test)):
         id, inputs, gt = dataset_test[idx]
         
-        # 数据预处理
-        inputs1 = inputs.float().cuda().unsqueeze(0)
+        # 数据预处理，添加 batch 维度，从 (N, 3) 变成 (1, N, 3)
+        inputs1 = inputs.float().to(device).unsqueeze(0)
         inputs1 = inputs1.transpose(2, 1).contiguous()
-        gt_cuda = gt.float().cuda().unsqueeze(0)
+        gt_cuda = gt.float().to(device).unsqueeze(0)
 
         # 推理
         with torch.no_grad():
@@ -68,9 +68,9 @@ def save_pcd(args):
             output = result['out2']  # 使用最精细的输出 fine1
 
         # 转换为numpy
-        inputs_np = inputs.cpu().numpy()
-        gt_np = gt.cpu().numpy()
-        output_np = output.squeeze(0).cpu().numpy()
+        inputs_np = inputs.detach().cpu().numpy()
+        gt_np = gt.detach().cpu().numpy()
+        output_np = output.squeeze(0).detach().cpu().numpy()
         
         # 创建点云对象
         pcd_input = o3d.geometry.PointCloud()
