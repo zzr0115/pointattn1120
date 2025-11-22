@@ -7,23 +7,21 @@ requires-python = ">=3.10.0"
 
 dependencies = [
     "numpy>=1.26.0",
+    "open3d>=0.13.0",
+]
+
+[project.optional-dependencies]
+train = [
+    "pandas>=2.0",
     "tensorboard>=2.20.0",
     "h5py>=3.6.0",
     "matplotlib>=3.4.3",
     "munch>=2.5.0",
     "PyYAML>=5.4.1",
     "transforms3d>=0.4.2",
-    "open3d>=0.13.0",
     "chamfer-3d",
     "mmdet3d",
 ]
-
-
-[[tool.uv.index]] 
-name = "qinghua" 
-url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
-
-[project.optional-dependencies]
 cpu = [
   "torch>=2.7.0",
   "torchvision>=0.22.0",
@@ -36,6 +34,10 @@ cu128 = [
   "torch>=2.7.0",
   "torchvision>=0.22.0",
 ]
+
+[[tool.uv.index]] 
+name = "qinghua" 
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
 
 [tool.uv]
 conflicts = [

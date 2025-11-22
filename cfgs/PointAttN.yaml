@@ -45,7 +45,9 @@ pcnpath: $PATH/ShapeNetCompletion
 c3dpath: './data/dataset2019/shapenet'
 
 # 测试
-save_vis: False
+test_configs:
+  model_save_path: './log/PointAttN_cd_debug_c3d/best_cd_p_network.pth'
+  data_index: 4002
 
 # CSV记录器配置
 csv_columns: ['epoch', 'train/loss', 'val/cd_p', 'val/cd_t', 'val/cd_p_coarse', 'val/cd_t_coarse', 'train/lr']

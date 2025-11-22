@@ -146,58 +146,6 @@ def val(net, curr_epoch_num, metrics, dataloader_test, best_epoch_losses, writer
         logger.info('; '.join(best_log))
 
 
-def result_test():
-    # 初始化数据集
-    if args.dataset == 'pcn':
-        dataset = PCN_pcd(args.pcnpath, prefix="train")
-        dataset_test = PCN_pcd(args.pcnpath, prefix="test")
-    elif args.dataset == 'c3d':
-        dataset = C3D_h5(args.c3dpath, prefix="train")
-        dataset_test = C3D_h5(args.c3dpath, prefix="val")
-    else:
-        raise ValueError('dataset is not exist')
-    
-    id, inputs, gt = dataset[4002] # 数据集的第4002个数据
-
-    model_module = importlib.import_module(f'.{args.model_name}', 'models')
-    # 根据 args.dataset 选择对应的模型配置
-    model_config = args.model_configs[args.dataset]
-    model = model_module.Model(**model_config)
-
-    # 设置device
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    if device.type == 'cuda' and torch.cuda.device_count() > 1:
-        net = torch.nn.DataParallel(model)
-    else:
-        net = model
-    
-    net.to(device)
-
-    # 2. 加载已保存的模型
-    model_path = './log/jiaoyanshi/PointAttn_cd_debug_c3d/best_cd_p_network.pth'
-    ckpt = torch.load(model_path)
-    state_dict = ckpt['net_state_dict']
-    
-    # 移除可能存在的 'module.' 前缀（多GPU保存的模型）
-    if list(state_dict.keys())[0].startswith('module.'):
-        state_dict = {k.replace('module.', ''): v for k, v in state_dict.items()}
-    
-    model.load_state_dict(state_dict)
-    net.eval()
-
-    # 3. 数据预处理
-    inputs1 = inputs.float().cuda().unsqueeze(0)
-    inputs1 = inputs1.transpose(2, 1).contiguous()  # 将点云数据从 (1, N, 3) 转换为 (1, 3, N)
-    gt = gt.float().cuda().unsqueeze(0)
-
-    # 4. 推理
-    with torch.no_grad():
-        output, loss, net_loss = net(inputs1, gt, is_training=True)
-
-    visualize_pcd = getattr(importlib.import_module("visualize"), "visualize_pcd")
-    visualize_pcd(input=inputs, gt=gt.squeeze(0), output=output.squeeze(0)) # output.squeeze(0) 将输出张量从 (1, N, 3) 转换为 (N, 3)
-    
-
 if __name__ == "__main__":
     # 1. 解析命令行参数和配置文件
     parser = argparse.ArgumentParser(description='Train config file')
@@ -315,7 +263,5 @@ if __name__ == "__main__":
             scheduler = MultiStepLR(optimizer, milestones=milestones, gamma=gamma)
 
     train(net, dataloader, dataloader_test, optimizer, scheduler, device)
-    # result_test()
-
-
+    
 
