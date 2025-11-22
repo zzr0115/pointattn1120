@@ -68,9 +68,9 @@ if __name__ == "__main__":
     output_files = list(vis_dir.glob("output_*.pcd"))
     
     # 使用找到的第一组文件
-    input_pcd_path = str(input_files[0])
-    gt_pcd_path = str(gt_files[0])
-    output_pcd_path = str(output_files[0])
+    input_pcd_path = str(input_files[400])
+    gt_pcd_path = str(gt_files[400])
+    output_pcd_path = str(output_files[400])
     
     print(f"Loading:\n  {input_pcd_path}\n  {gt_pcd_path}\n  {output_pcd_path}")
 
