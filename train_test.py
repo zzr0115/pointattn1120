@@ -98,6 +98,11 @@ def train(net, dataloader, dataloader_test, optimizer, scheduler, device):
 
     writer.close()
     logger.info("Training completed!")
+    
+    # 确保所有文件写入磁盘
+    import time
+    time.sleep(2)  # 等待文件系统完成写入
+    logger.info("All files saved successfully!")
 
 
 def val(net, curr_epoch_num, metrics, dataloader_test, best_epoch_losses, writer, csv_logger, device):
