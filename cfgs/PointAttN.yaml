@@ -2,7 +2,7 @@
 batch_size: 16  # RTX 4090 24GB 显存可以用更大的 batch
 workers: 8  # 使用多个 worker 加速数据加载
 start_epoch: 0
-end_epoch: 200
+end_epoch: 150
 
 work_dir: log/ # 训练日志保存路径
 flag: debug # 调试
