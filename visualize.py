@@ -71,18 +71,17 @@ if __name__ == "__main__":
     target_id = args.id
 
     # 构造文件路径
-    input_pcd_path = str(vis_dir / f"input_{target_id}.pcd")
-    gt_pcd_path = str(vis_dir / f"gt_{target_id}.pcd")
-    output_pcd_path = str(vis_dir / f"output_{target_id}.pcd")
+    input_pcd_path = vis_dir.joinpath(f"input_{target_id}.pcd")
+    gt_pcd_path = vis_dir.joinpath(f"gt_{target_id}.pcd")
+    output_pcd_path = vis_dir.joinpath(f"output_{target_id}.pcd")
     
-    print(f"Loading ID {target_id}:\n  {input_pcd_path}\n  {gt_pcd_path}\n  {output_pcd_path}")
-
     # 检查路径是否存在
     files = [input_pcd_path, gt_pcd_path, output_pcd_path]
     # 缺失的文件路径，如果所有文件都存在，missing 就是一个空列表 []
-    missing = [p for p in files if not Path(p).exists()] 
+    missing = [p for p in files if not p.exists()] 
     
     if missing:
-        print(f"Error: Files not found: {missing}")
+        print(f"Error: Files not found: {[str(p) for p in missing]}")
     else:
-        visualize_pcd(input_pcd_path, gt_pcd_path, output_pcd_path)
+        print(f"Loading ID {target_id}:\n  {input_pcd_path}\n  {gt_pcd_path}\n  {output_pcd_path}")
+        visualize_pcd(str(input_pcd_path), str(gt_pcd_path), str(output_pcd_path))
