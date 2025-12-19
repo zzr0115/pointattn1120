@@ -58,20 +58,31 @@ def visualize_pcd(input_path, gt_path, output_path):
 
 if __name__ == "__main__":
     from pathlib import Path
+    import argparse
     
     # 默认读取 visualizations 目录下的点云文件
     vis_dir = Path("./visualizations")
     
-    # 查找目录中的PCD文件
-    input_files = list(vis_dir.glob("input_*.pcd"))
-    gt_files = list(vis_dir.glob("gt_*.pcd"))
-    output_files = list(vis_dir.glob("output_*.pcd"))
+    # 使用 argparse 解析命令行参数
+    parser = argparse.ArgumentParser(description="Visualize point clouds by ID.")
+    parser.add_argument("id", type=int, nargs="?", default=0, help="The ID of the sample to visualize (default: 0)")
+    args = parser.parse_args()
     
-    # 使用找到的第一组文件
-    input_pcd_path = str(input_files[400])
-    gt_pcd_path = str(gt_files[400])
-    output_pcd_path = str(output_files[400])
-    
-    print(f"Loading:\n  {input_pcd_path}\n  {gt_pcd_path}\n  {output_pcd_path}")
+    target_id = args.id
 
-    visualize_pcd(input_pcd_path, gt_pcd_path, output_pcd_path)
+    # 构造文件路径
+    input_pcd_path = str(vis_dir / f"input_{target_id}.pcd")
+    gt_pcd_path = str(vis_dir / f"gt_{target_id}.pcd")
+    output_pcd_path = str(vis_dir / f"output_{target_id}.pcd")
+    
+    print(f"Loading ID {target_id}:\n  {input_pcd_path}\n  {gt_pcd_path}\n  {output_pcd_path}")
+
+    # 检查路径是否存在
+    files = [input_pcd_path, gt_pcd_path, output_pcd_path]
+    # 缺失的文件路径，如果所有文件都存在，missing 就是一个空列表 []
+    missing = [p for p in files if not Path(p).exists()] 
+    
+    if missing:
+        print(f"Error: Files not found: {missing}")
+    else:
+        visualize_pcd(input_pcd_path, gt_pcd_path, output_pcd_path)
